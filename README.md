@@ -8,7 +8,7 @@ A friendly, lightweight web app to **split expenses fairly** with friends. Add p
 
 ## 🌐 Live
 
-## **Deployed on Vercel:** [https://splitfair-ten.vercel.app/](https://splitfair-ten.vercel.app/)
+## **Deployed on Vercel:** [SplitFair](https://splitfair-ten.vercel.app/)
 
 ## ✨ Features
 
