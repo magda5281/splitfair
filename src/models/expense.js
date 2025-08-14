@@ -31,31 +31,17 @@ export default class Expense {
   }
 
   //  Used by imports; keeps the constructor args the same
+  // Expense.fromJSON (or wherever you parse expenses)
   static fromJSON(obj) {
-    const paidBy = (obj?.paidBy ?? '').trim();
-    const amount = Number(obj?.amount);
-    const description = obj?.description ?? 'No description';
+    const exp = new Expense(obj.paidBy, obj.amount, obj.description);
 
-    if (!paidBy) throw new Error('Invalid expense: empty paidBy');
-    if (!Number.isFinite(amount) || amount <= 0)
-      throw new Error('Invalid amount');
-
-    // create via the existing constructor (don’t change its signature)
-    const exp = new Expense(paidBy, amount, description);
-
-    // preserve imported id/timestamp if provided and valid
-    if (typeof obj?.id === 'string' && obj.id.trim()) {
-      exp.id = obj.id.trim();
-    }
+    if (typeof obj?.id === 'string' && obj.id.trim()) exp.id = obj.id.trim();
     if (typeof obj?.timestamp === 'string') {
       const d = new Date(obj.timestamp);
       if (!Number.isNaN(d.getTime())) {
-        exp.timestamp = d.toISOString(); // normalise
-      } else {
-        throw new Error('Invalid timestamp');
+        exp.timestamp = d.toISOString();
       }
     }
-
     return exp;
   }
 }

@@ -44,31 +44,35 @@ export class ExpenseService {
     const existingExpenses = new Map(
       (this.expenses ?? []).map((e) => [e.id, e])
     );
-
     expenses.forEach((expense) => {
+      const validPaidBy =
+        typeof expense.paidBy === 'string' && expense.paidBy.trim().length > 0;
       const paidBy = expense.paidBy.trim();
+      const validAmount = Number.isFinite(expense.amount) && expense.amount > 0;
       const amount = parseFloat(expense.amount.toFixed(2)) || 0;
-      const description = expense?.description.trim() || 'No description';
-      const id = expense.id.trim();
 
-      const validPaidBy = typeof paidBy === 'string' && paidBy.length > 0;
-      const expenseExists = existingExpenses.has(id.trim());
-      const validAmount = typeof amount === 'number' && amount > 0;
+      const description = expense.description?.trim() || 'No description';
+      const id = typeof expense.id === 'string' ? expense.id.trim() : '';
 
-      const userExists = this.userService.hasUser(
-        (validPaidBy && paidBy) || ''
-      );
+      const expenseExists = existingExpenses.has(id);
+      const userExists = this.userService.hasUser(paidBy);
       const validData = validPaidBy && validAmount;
-
-      const validatedExpense = { paidBy, amount, description };
 
       if (validData) {
         if (!expenseExists) {
+          const exp = Expense.fromJSON({
+            ...expense,
+            id,
+            paidBy,
+            amount,
+            description,
+          });
+
           if (userExists) {
-            expensesValidated.valid.push(new Expense(validatedExpense));
+            expensesValidated.valid.push(exp);
           } else {
             this.userService.addUser(paidBy);
-            expensesValidated.valid.push(new Expense(validatedExpense));
+            expensesValidated.valid.push(exp);
           }
         } else {
           expensesValidated.existing.push(expense);
@@ -83,6 +87,7 @@ export class ExpenseService {
     if (!Array.isArray(expenseData)) {
       throw new Error('Expense data must be an array');
     }
+
     const validatedExpense = this.validateImportedExpenses(expenseData);
 
     this.expenses.push(...validatedExpense.valid);

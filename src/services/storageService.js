@@ -8,10 +8,10 @@ export class StorageService {
 
   exportData() {
     const data = {
-      users: this.userService.getAllUsers().map((user) => user.toJSON()),
-      expenses: this.expenseService
-        .getAllExpenses()
-        .map((expense) => expense.toJSON()),
+      users: this.userService.getAllUsers().map((user) => user?.toJSON()),
+      expenses: this.expenseService.getAllExpenses().map((expense) => {
+        return expense?.toJSON();
+      }),
       exportDate: new Date().toISOString(),
     };
     const counts = { users: data.users.length, expenses: data.expenses.length };
@@ -47,6 +47,7 @@ export class StorageService {
       reader.onload = (event) => {
         try {
           const data = JSON.parse(event.target.result);
+
           const users = Array.isArray(data.users) ? data.users : [];
           const expenses = Array.isArray(data.expenses) ? data.expenses : [];
 
