@@ -19,7 +19,6 @@ export default class Expense {
     return crypto.randomUUID();
   }
 
-  // Used by exports (and JSON.stringify will call this automatically)
   toJSON() {
     return {
       id: this.id,
@@ -30,8 +29,6 @@ export default class Expense {
     };
   }
 
-  //  Used by imports; keeps the constructor args the same
-  // Expense.fromJSON (or wherever you parse expenses)
   static fromJSON(obj) {
     const exp = new Expense(obj.paidBy, obj.amount, obj.description);
 
